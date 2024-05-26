@@ -1,0 +1,56 @@
+Video Download and Preprocessing:
+
+The video is downloaded from YouTube using the PyTube library.
+Only the segment of the video from 40 seconds to 70 seconds is processed for ease of computation.
+
+Object Detection with YOLOv3:
+
+YOLOv3 (You Only Look Once) is used to detect objects in each frame, specifically focusing on detecting the soccer ball and the player.
+The model is initialized with pre-trained weights and configuration files.
+For each frame, YOLOv3 detects the bounding boxes of the ball and the player with a confidence threshold.
+
+Pose Estimation with MediaPipe:
+
+MediaPipe Pose is used to estimate the player's pose, particularly focusing on detecting the ankle positions.
+The right and left ankle positions are extracted from the pose landmarks.
+
+Toe Position Estimation:
+
+The position of each foot's toe is estimated as the average of the (x, y) coordinates of the center of the ball and the (x, y) coordinates of the corresponding foot's ankle.
+Touch Detection Logic:
+
+A touch is considered valid if the estimated toe position is above the y-coordinate of the ball's bounding box and within the x-range of the bounding box.
+Touches are counted only if a certain number of frames have passed since the last touch to avoid recounting the same touch multiple times.
+
+Player Velocity Calculation:
+
+The player's velocity is calculated as the distance between the player's position in consecutive frames, divided by the number of frames between measurements.
+An exponential moving average is used to smooth the velocity values.
+
+Ball Movement Direction:
+
+The direction of the ball's movement (forward or backward) is determined using optical flow between consecutive frames.
+Optical flow is calculated using the Farneback method, and the average vertical flow component is used to determine the direction.
+
+Frame Processing:
+
+The video is processed at a rate of every 3rd frame to balance computational efficiency and accuracy.
+For each processed frame, the script performs object detection, pose estimation, touch detection, velocity calculation, and ball movement direction determination.
+Results:
+
+The analysis yields the following results for the video segment from 40 seconds to 70 seconds:
+
+Conclusion:
+This report summarizes the methodology and results of using YOLOv3 and MediaPipe to analyze a soccer video. The approach involves detecting objects, estimating pose, calculating velocity, and determining ball movement direction to provide insights into the player's interactions with the ball.
+
+Limitations:
+Duplicate counting of touches at times when there isn't much difference between the current frame and the previous frame.
+Inability to detect the ankles of the player when significant portion of the player's body isn't visible, leading to some missed or unaccounted touches.
+
+Updated Logic to Avoid False Touches
+Track Foot Movement:
+
+Ensure the foot is moving towards the ball when counting a touch.
+Velocity Threshold:
+
+Only count a touch if the foot's movement velocity exceeds a certain threshold.
